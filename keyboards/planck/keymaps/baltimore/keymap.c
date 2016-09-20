@@ -8,6 +8,9 @@
   #include "audio.h"
 #endif
 #include "eeconfig.h"
+#include "quantum.h"
+#include "version.h"
+
 
 extern keymap_config_t keymap_config;
 
@@ -80,7 +83,7 @@ enum planck_keycodes
 
 Qwerty/Dvorak --
   |       |      \
-Lower - Raise    Nav
+Lower - Raise    Nav(esc)
       |
     ADJUST
 */
@@ -132,14 +135,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+------|------+------+------+------+------+------|
  * | LSPC |   ;  |   Q  |   J  |   K  |   X  |   B  |   M  |   W  |   V  |   Z  | RSPC |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * | Esc  | Lead | Alt  | GUI  |Lower |    Space    |Raise | Hypr |Enter |      | fn?  |
+ * |(Esc) | Lead | Alt  | GUI  |Lower |    Space    |Raise | Left | Down |  Up  |Right |
  * `-----------------------------------------------------------------------------------'
  */
-[_DVORAK] = {/*KC_SLSH*/
-  { KC_TAB, KC_QUOT, KC_COMM,  KC_DOT,  KC_P,   KC_Y,   KC_F,  KC_G,    KC_C,      KC_R,     KC_L, KC_BSPC},
-  {KC_LCTL,    KC_A,    KC_O,    KC_E,  KC_U,   KC_I,   KC_D,  KC_H,    KC_T,      KC_N,     KC_S,  KC_ENT},
-  {KC_LSPO, KC_SCLN,    KC_Q,    KC_J,  KC_K,   KC_X,   KC_B,  KC_M,    KC_W,      KC_V,     KC_Z, KC_RSPC},
-  {    NAV, KC_LEAD, KC_LALT, KC_LGUI, LOWER, KC_SPC, KC_SPC, RAISE, KC_HYPR, KC_RETURN, MO(_DYN),   DM_P1}
+[_DVORAK] = {/* Dvorak layout */
+  { KC_TAB, KC_QUOT, KC_COMM,  KC_DOT,  KC_P,   KC_Y,   KC_F,  KC_G,    KC_C,    KC_R,  KC_L, KC_BSPC},
+  {KC_LCTL,    KC_A,    KC_O,    KC_E,  KC_U,   KC_I,   KC_D,  KC_H,    KC_T,    KC_N,  KC_S,  KC_ENT},
+  {KC_LSPO, KC_SCLN,    KC_Q,    KC_J,  KC_K,   KC_X,   KC_B,  KC_M,    KC_W,    KC_V,  KC_Z, KC_RSPC},
+  {    NAV, KC_LEAD, KC_LALT, KC_LGUI, LOWER, KC_SPC, KC_SPC, RAISE, KC_LEFT, KC_DOWN, KC_UP, KC_RGHT}
 },
 
 /* Qwerty-Dvorak
@@ -153,7 +156,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * | Esc  | Lead | Alt  | GUI  |Lower |    Space    |Raise | Hypr |Enter |MR_P1 |MR_P2 |
  * `-----------------------------------------------------------------------------------'
  */
-[_QWERTY_DVORAK] = {/*KC_SLSH*/
+[_QWERTY_DVORAK] = {/* mixed */
   { KC_TAB, DV_QUOT, DV_COMM,  DV_DOT,  DV_P,   DV_Y,   DV_F,  DV_G,    DV_C,      DV_R,     DV_L, KC_BSPC},
   {KC_LCTL,    DV_A,    DV_O,    DV_E,  DV_U,   DV_I,   DV_D,  DV_H,    DV_T,      DV_N,     DV_S,  KC_ENT},
   {KC_LSPO, DV_SCLN,    DV_Q,    DV_J,  DV_K,   DV_X,   DV_B,  DV_M,    DV_W,      DV_V,     DV_Z, KC_RSPC},
@@ -161,59 +164,60 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 },
 
 
-/* Lower  |
+/* Lower
  * ,-----------------------------------------------------------------------------------.
- * |   ~  |   !  |   @  |   #  |   $  |   %  |   ^  |   &  |   *  |   [  |   ]  | Bksp |
+ * |   `  |   1  |   2  |   3  |   4  |   5  |   6  |   7  |   8  |   9  |   0  |  -   |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * | Bksp |      |      |      |      |      |      |      |      |   =  |   /  |  -   |
+ * |      |      |      |      |      |      |      |      |   /  |   =  |   \  |      |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
- * |      |      |      |      |      |      |      |      |      |      |   \  |      |
+ * |      |      |      |      |      |      |      |      |  [   | Hyper|   ]  |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
  * |      |      |      |      |      |             |      |  ←  |   ↓  |   ↑  |  →   |
  * `-----------------------------------------------------------------------------------'
  */
 [_LOWER] = {/* KC_BSLS KC_PIPE KC_UNDS KC_LCBR KC_RCBR KC_TILD */
-  { KC_GRV, KC_EXLM,   KC_AT, KC_HASH,  KC_DLR, KC_PERC, KC_CIRC, KC_AMPR, KC_ASTR, KC_LBRC, KC_RBRC, _______},
-  {KC_BSPC, _______, _______, _______, _______, _______, _______, _______, _______,  KC_EQL, KC_SLSH, KC_MINS},
-  {_______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_BSLS, _______},
+  { KC_GRV,    KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0, KC_MINS},
+  {_______, _______, _______, _______, _______, _______, _______, _______, KC_SLSH,  KC_EQL, KC_BSLS, _______},
+  {_______, _______, _______, _______, _______, _______, _______, _______, KC_LBRC, KC_HYPR, KC_RBRC, _______},
   {_______, _______, _______, _______, _______,  KC_SPC,  KC_SPC, _______, KC_LEFT, KC_DOWN,   KC_UP, KC_RGHT}
 },
 
 /* Raise
  * ,-----------------------------------------------------------------------------------.
- * |      |   1  |   2  |   3  |   4  |   5  |   6  |   7  |   8  |   9  |   0  | Bksp |
+ * |   ~  |   !  |   @  |   #  |   $  |   %  |   ^  |   &  |   *  |   (  |   )  |  -   |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * |      | Int1 | Int2 | Int3 | Int4 | ISO# | ISO/ |      |      |      |      |      |
+ * |      |   ?  |   +  |   |  | Prev | Next | Vol- | Vol+ |      |      |      |KEnter|
  * |------+------+------+------+------+------|------+------+------+------+------+------|
- * |      | Prev | Play | Next | Mute | Vol- | Vol+ |      |  M1  |   ↑  |  M2  |      |
+ * |      |   {  | Hyper|   }  | Play | ISO# | ISO/ | Mute |      |      |      |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * |      |      |      |      |      |             |      |  ←  |   ↓  |  →   |      |
+ * |      |      |      |      |      |    Space    |      |  ←  |   ↓  |   ↑  |  →   |
  * `-----------------------------------------------------------------------------------'
  */
-[_RAISE] = {
-  {_______,    KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,   _______},
-  {KC_BSPC, KC_INT1, KC_INT2, KC_INT3, KC_INT4, KC_NUHS, KC_NUBS, _______, KC_SLSH,  KC_EQL, KC_BSLS, KC_RETURN},
-  {_______, KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE, KC_VOLD, KC_VOLU, _______, _______,   KC_UP, _______,   _______},
-  {_______, _______, _______, _______, _______,  KC_SPC,  KC_SPC, _______, KC_LEFT, KC_DOWN, KC_RGHT,   _______}
+[_RAISE] = {//KC_HYPR
+//{_______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,    KC_MINS},
+  {KC_TILD, KC_EXLM,   KC_AT, KC_HASH,  KC_DLR, KC_PERC, KC_CIRC, KC_AMPR, KC_ASTR, KC_LBRC, KC_RBRC,    KC_MINS},
+  {_______, KC_QUES, KC_PLUS, KC_PIPE, KC_MPRV, KC_MNXT, KC_VOLD, KC_VOLU, _______, _______, _______,KC_KP_ENTER},
+  {_______, KC_LCBR, KC_HYPR, KC_RCBR, KC_MPLY, KC_NUHS, KC_NUBS, KC_MUTE, _______, _______, _______,    _______},
+  {_______, _______, _______, _______, _______,  KC_SPC,  KC_SPC, _______, KC_LEFT, KC_DOWN,   KC_UP,    KC_RGHT}
 },
 
 /* Navigation layer
  * ,------------------------------------------------------------------------------------.
- * |      |      |   W  |      |  B1  | MUp  |  B2  |      |      |      |      |       |
+ * |      |      |   W  |      |  B1  | MUp  |  B2  |  w← |  w↓  |  w↑  |  w→  |       |
  * |------+------+------+------+------+-------------+------+------+------+------+-------|
  * |      |   A  |   S  |   D  |MRight|  B3  |MLeft |   H  |   J  |   K  |   L  |       |
  * |------+------+------+------+------+------|------+------+------+------+------+-------|
  * |      |      |      |      |  B4  |MDown |  B5  |      |      |  Up  |      |       |
  * |------+------+------+------+------+------+------+------+------+------+------+-------|
- * |      |      |      |      |      |             |      | Left | Down |Right |  del  |
- * `-----------------------------------------------------------------------------------'
+ * |      |      | Exit |      |      |    Space    |      | Left | Down |Right |       |
+ * `------------------------------------------------------------------------------------'
  */
 
 [_NAV] = {
-  {_______, XXXXXXX,    KC_W, XXXXXXX, KC_MS_BTN1,   KC_MS_UP,  KC_MS_BTN2, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, _______},
+  {_______, XXXXXXX,    KC_W, XXXXXXX, KC_MS_BTN1,   KC_MS_UP,  KC_MS_BTN2, KC_MS_L, KC_MS_D, KC_MS_U, KC_MS_R, _______},
   {_______,    KC_A,    KC_S,    KC_D, KC_MS_LEFT, KC_MS_BTN3, KC_MS_RIGHT,    KC_H,    KC_J,    KC_K,    KC_L, _______},
   {_______, XXXXXXX, XXXXXXX, XXXXXXX, KC_MS_BTN4, KC_MS_DOWN,  KC_MS_BTN5, XXXXXXX, XXXXXXX,   KC_UP, XXXXXXX, _______},
-  {_______, _______, EXT_NAV, TOG_OUT,    _______,     KC_SPC,      KC_SPC, _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_BSPC}
+  {_______, _______, EXT_NAV, _______,    _______,     KC_SPC,      KC_SPC, _______, KC_LEFT, KC_DOWN, KC_RGHT, _______}
 },
 
 /* Mouse layer
@@ -222,19 +226,19 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     Mousekey accel KC_MS_ACCEL0, KC_MS_ACCEL1, KC_MS_ACCEL2         0xFF 
 
  * ,-----------------------------------------------------------------------------------.
- * |      |      |   W  |      |      |      |      |      |      |      |      |      |
+ * |      |      |      |      |      |      |      |      |      |      |      |      |
  * |------+------+------+------+------+-------------+------+------+------+------+------|
- * |      |   A  |   S  |   D  |      |      |      |      |      |      |      |      |
+ * |      |      |      |      |      |      |      |      |      |      |      |      |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
  * |TogOut|      |      |      |      |      |      |      |      |      |      |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
- * | Exit |      |      |      |Lower |             |Raise |      |      |      |      |
+ * | Exit |      |      |      |Lower |    Space    |Raise |      |      |      |      |
  * `-----------------------------------------------------------------------------------'
  */
 
 [_MOUSE] = {
-  {XXXXXXX, XXXXXXX,    KC_W, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, _______},
-  {XXXXXXX,    KC_A,    KC_S,    KC_D, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX},
+  {XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX},
+  {XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX},
   {TOG_OUT, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX},
   {EXT_NAV, _______, XXXXXXX, XXXXXXX, _______,  KC_SPC,  KC_SPC, _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX}
 },
@@ -242,20 +246,20 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 /* Adjust (Lower + Raise)
  * ,-------------------------------------------------------------------------------------.
- * | Reset |  F1  |  F2  |  F3  |  F4  |      |      |      |      |      | F10  |       |
+ * | Reset |  F1  |  F2  |  F3  |  F4  |  F5  |      |      |      |      | F10  |       |
  * |-------+------+------+------+------+-------------+------+------+------+------+-------|
- * |       | F11  | F12  | F13  | F14  |      |      |      |      |      |      |       |
+ * |       | F11  | F12  | F13  | F14  | F15  |      |      |      |      |      |       |
  * |-------+------+------+------+------+------|------+------+------+------+------+-------|
- * |       |Voice-|Voice+|Mus on|Musoff|Aud on|Audoff|      |      |AGswap|AGNORM|       |
+ * |       |Voice-|Voice+|Mus on|Musoff|Aud on|Audoff| AU ON|AU Off|AGswap|AGNORM|       |
  * |-------+------+------+------+------+------+------+------+------+------+------+-------|
- * |       |Qwerty|Dvorak| Nav  |      |             |      |      |BK_LIT|      |       |
+ * |       |Qwerty|Dvorak| Nav  |      |    Space    |      |      |BK_LIT|      |       |
  * `-------------------------------------------------------------------------------------'
  */
 [_ADJUST] = {/*dropped COLEMAK*/
-  {  RESET,   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,  KC_F10, _______},
-  {_______,  KC_F11,  KC_F12,  KC_F13,  KC_F14, _______, _______, _______, _______, _______, _______, _______},
-  {_______,  MUV_DE,  MUV_IN,   MU_ON,  MU_OFF,   MI_ON,  MI_OFF,   AU_ON,  AU_OFF, AG_SWAP, AG_NORM, _______},
-  {   QD  ,  QWERTY,  DVORAK, ENT_NAV, _______,  KC_SPC,  KC_SPC, _______, _______,  BK_LIT, _______, _______}
+  {  RESET,  KC_F1,  KC_F2,   KC_F3,   KC_F4,  KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,  KC_F10, _______},
+  {_______, KC_F11, KC_F12,  KC_F13,  KC_F14, KC_F15, _______, _______, _______, _______, _______, _______},
+  {_______, MUV_DE, MUV_IN,   MU_ON,  MU_OFF,  MI_ON,  MI_OFF,   AU_ON,  AU_OFF, AG_SWAP, AG_NORM, _______},
+  {   QD  , QWERTY, DVORAK, ENT_NAV, _______, KC_SPC,  KC_SPC, _______, _______,  BK_LIT, _______, _______}
 },
 
 [_DYN] = {/*Macro layer, must be last*/
@@ -292,7 +296,8 @@ void persistant_default_layer_set(uint16_t default_layer)
     default_layer_set(default_layer);
 }
 
-/** handles action macros
+/**
+handles action macros
 @param record key info
 @param id macro ID
 @param opt
@@ -423,7 +428,7 @@ const macro_t *action_get_macro(keyrecord_t* record, uint8_t id, uint8_t opt)
 void matrix_init_user(void)
 {
     #ifdef AUDIO_ENABLE
-        startup_user();
+        //startup_user();
     #endif
 }
 
@@ -431,13 +436,24 @@ LEADER_EXTERNS();
 
 void matrix_scan_user(void)
 {
+    /**
+    keyboard  keys:
+    hjkl - tmux navigation
+    thankyou
+    a - 
+    d - delete
+    m - bbedit mark line
+    v - version
+    */
     LEADER_DICTIONARY()
     {
         leading = false;
         leader_end();
         
-        //SEQ_ONE_KEY(KC_V){SEND_STRING(QMK_KEYBOARD "/" QMK_KEYMAP " @ " QMK_VERSION);}
+        SEQ_ONE_KEY(KC_V){SEND_STRING(QMK_KEYBOARD "/" QMK_KEYMAP " @ " QMK_VERSION);}
         SEQ_ONE_KEY(KC_T){SEND_STRING("Thank You");}
+        SEQ_ONE_KEY(KC_DOT){SEND_STRING("../");}
+        SEQ_THREE_KEYS(KC_DOT, KC_DOT, KC_DOT){SEND_STRING("\xE2\x33");}
         
         SEQ_ONE_KEY(KC_A)
         {
@@ -453,28 +469,11 @@ void matrix_scan_user(void)
             unregister_code(KC_BSPC);
         }
         
-        SEQ_ONE_KEY(KC_M)
-        {
-            register_code(KC_A);
-            unregister_code(KC_A);
-            register_code(KC_2);
-            unregister_code(KC_2);
-            register_code(KC_3);
-            unregister_code(KC_3);
-            register_code(KC_4);
-            unregister_code(KC_4);
-            register_code(KC_5);
-            unregister_code(KC_5);
-        }
+        /* * * * * * * * * * * * * * * */
+        /* tmux settings */
         
-        SEQ_TWO_KEYS(KC_Q, KC_E)
-        {
-            SEND_STRING("thomas.cherry@gmail.com");
-        }
-        
-        
-        //tmux go left
-        SEQ_TWO_KEYS(KC_B, KC_L)
+        //tmux go left ctr-b + left
+        SEQ_ONE_KEY(KC_H)
         {
             register_mods(KC_LCTL);
             register_code(KC_B);
@@ -485,21 +484,73 @@ void matrix_scan_user(void)
             register_code(KC_LEFT);
             unregister_code(KC_LEFT);
         }
+
+        //tmux go down  ctr-b + down
+        SEQ_ONE_KEY(KC_J)
+        {
+            register_mods(KC_LCTL);
+            register_code(KC_B);
+            
+            unregister_code(KC_B);
+            unregister_mods(KC_LCTL);
+            
+            register_code(KC_DOWN);
+            unregister_code(KC_DOWN);
+        }
+
+        //tmux go up  ctr-b + up
+        SEQ_ONE_KEY(KC_K)
+        {
+            register_mods(KC_LCTL);
+            register_code(KC_B);
+            
+            unregister_code(KC_B);
+            unregister_mods(KC_LCTL);
+            
+            register_code(KC_UP);
+            unregister_code(KC_UP);
+        }
         
-        SEQ_THREE_KEYS(KC_S, KC_D, KC_F)
+        //tmux go right
+        SEQ_ONE_KEY(KC_L)
+        {
+            register_mods(KC_LCTL);
+            register_code(KC_B);
+            
+            unregister_code(KC_B);
+            unregister_mods(KC_LCTL);
+            
+            register_code(KC_RIGHT);
+            unregister_code(KC_RIGHT);
+        }
+        
+        SEQ_ONE_KEY(KC_M){SEND_STRING("// #mark - label\n");}
+        
+        SEQ_TWO_KEYS(KC_T, KC_C){SEND_STRING("thomas.cherry@gmail.com");}
+        
+        /** command s */
+        /*SEQ_THREE_KEYS(KC_S, KC_D, KC_F)
         {
             register_code(KC_LGUI);
             register_code(KC_S);
             unregister_code(KC_S);
             unregister_code(KC_LGUI);
-        }
-        //SEQ_THREE_KEYS(KC_, KC_D, KC_F)
+        }*/
+        /*SEQ_THREE_KEYS(KC_, KC_D, KC_F) {register_code();}*/
+        
+        SEQ_ONE_KEY(KC_C){SEND_STRING("/* ********** */");}
+        SEQ_TWO_KEYS(KC_C, KC_C){SEND_STRING("/* ********** ********** */");}
+        SEQ_THREE_KEYS(KC_C, KC_C, KC_C)
         {
-            //register_code();
+            SEND_STRING("/* ********** ********** ********** ********** */");
         }
+        
     }
 }
 
+/**
+This is not really used unless macros are working
+*/
 bool process_record_user(uint16_t keycode, keyrecord_t *record)
 {
     /*if (!process_record_dynamic_macro(keycode, record))
